@@ -1,9 +1,9 @@
 package com.project.eshop.repositories;
 
-import com.project.eshop.entity.Category;
+import com.project.eshop.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-public interface ProductRepository extends JpaRepository<Category, Integer> {
+public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 }
