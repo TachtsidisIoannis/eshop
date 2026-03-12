@@ -1,10 +1,10 @@
 package com.project.eshop.repositories;
 
-import com.project.eshop.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.project.eshop.entity.Store;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface StoreRepository extends JpaRepository<Store, Integer> {
 
 }
