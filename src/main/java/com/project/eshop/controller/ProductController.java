@@ -64,4 +64,9 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @GetMapping("/category/{categoryId}")
+    public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
+        return productRepository.findByCategoryId(categoryId);
+    }
 }
