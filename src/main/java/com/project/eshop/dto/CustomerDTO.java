@@ -1,11 +1,18 @@
 package com.project.eshop.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class CustomerDTO {
+	
 	private Integer id;
-    private String firstName;
-    private String lastName;
-    private String email;
+    @NotBlank
+	private String firstName;
+    @NotBlank
+	private String lastName;
+    @NotBlank
+    @Email
+	private String email;
 }

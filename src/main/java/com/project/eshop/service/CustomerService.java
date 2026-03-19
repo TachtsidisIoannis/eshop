@@ -30,6 +30,33 @@ public class CustomerService {
         return null;
     }
     
+    public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+    	Customer customerEntity = convertToEntity(customerDTO);
+    	Customer savedCustomer = customerRepository.save(customerEntity);
+    	return convertToDTO(savedCustomer);
+    }
+    
+    public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) {
+    	Optional<Customer> optionalCustomer = customerRepository.findById(id);
+    	if(optionalCustomer.isPresent()) {
+    		Customer existingCustomer = optionalCustomer.get();
+    		existingCustomer.setFirstName(customerDTO.getFirstName());
+    		existingCustomer.setLastName(customerDTO.getLastName());
+    		existingCustomer.setEmail(customerDTO.getEmail());
+    		Customer updatedCustomer = customerRepository.save(existingCustomer);
+    		return convertToDTO(updatedCustomer);
+    	}
+    	return null;
+    }
+    
+    public boolean deleteCustomer(Integer id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+    
     private CustomerDTO convertToDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
