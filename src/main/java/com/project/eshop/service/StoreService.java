@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,8 +20,33 @@ public class StoreService {
     }
 
     public StoreDTO getStoreById(Integer id) {
-        Optional<Store> store = storeRepository.findById(id);
-        return store.map(this::convertToDTO).orElse(null);
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Store not found!"));
+        return convertToDTO(store);
+    }
+
+    public StoreDTO createStore(StoreDTO storeDTO) {
+        Store store = new Store();
+        store.setCity(storeDTO.getCity());
+        store.setAddress(storeDTO.getAddress());
+        return convertToDTO(storeRepository.save(store));
+    }
+
+    public StoreDTO updateStore(Integer id, StoreDTO storeDTO) {
+        Store existingStore = storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Store not found!"));
+        
+        existingStore.setCity(storeDTO.getCity());
+        existingStore.setAddress(storeDTO.getAddress());
+        return convertToDTO(storeRepository.save(existingStore));
+    }
+
+    public boolean deleteStore(Integer id) {
+        if (storeRepository.existsById(id)) {
+            storeRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     private StoreDTO convertToDTO(Store store) {

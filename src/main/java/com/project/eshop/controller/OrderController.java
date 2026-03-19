@@ -1,14 +1,14 @@
 package com.project.eshop.controller;
 
-import com.project.eshop.entity.Order;
-import com.project.eshop.repositories.OrderRepository;
+import com.project.eshop.dto.OrderDTO;
+import com.project.eshop.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -16,56 +16,30 @@ import java.util.Optional;
 public class OrderController {
 	
 	@Autowired
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+	@GetMapping
+    public List<OrderDTO> getAllOrders() {
+        return orderService.getAllOrders();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Integer id) {
-        Optional<Order> order = orderRepository.findById(id);
-        return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
-    // BONUS: Get all orders for a specific customer
     @GetMapping("/customer/{customerId}")
-    public List<Order> getOrdersByCustomer(@PathVariable Integer customerId) {
-        return orderRepository.findByCustomerId(customerId);
+    public List<OrderDTO> getOrdersByCustomer(@PathVariable Integer customerId) {
+        return orderService.getOrdersByCustomer(customerId);
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order savedOrder = orderRepository.save(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
+    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(orderDTO));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Integer id, @RequestBody Order orderDetails) {
-        Optional<Order> optionalOrder = orderRepository.findById(id);
-
-        if (optionalOrder.isPresent()) {
-            Order existingOrder = optionalOrder.get();
-            existingOrder.setOrderDate(orderDetails.getOrderDate());
-            existingOrder.setStatus(orderDetails.getStatus());
-            existingOrder.setTotalAmount(orderDetails.getTotalAmount());
-            existingOrder.setCustomer(orderDetails.getCustomer());
-            
-            Order updatedOrder = orderRepository.save(existingOrder);
-            return ResponseEntity.ok(updatedOrder);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
-        if (orderRepository.existsById(id)) {
-            orderRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<OrderDTO> cancelOrder(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 }

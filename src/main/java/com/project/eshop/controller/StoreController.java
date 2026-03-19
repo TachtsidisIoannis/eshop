@@ -1,14 +1,14 @@
 package com.project.eshop.controller;
 
-import com.project.eshop.entity.Store;
-import com.project.eshop.repositories.StoreRepository;
+import com.project.eshop.dto.StoreDTO;
+import com.project.eshop.service.StoreService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/stores")
@@ -16,48 +16,31 @@ import java.util.Optional;
 public class StoreController {
 	
 	@Autowired
-    private StoreRepository storeRepository;
+    private StoreService storeService;
 
     @GetMapping
-    public List<Store> getAllStores() {
-        return storeRepository.findAll();
+    public List<StoreDTO> getAllStores() {
+        return storeService.getAllStores();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Store> getStoreById(@PathVariable Integer id) {
-        Optional<Store> store = storeRepository.findById(id);
-        return store.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<StoreDTO> getStoreById(@PathVariable Integer id) {
+        return ResponseEntity.ok(storeService.getStoreById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Store> createStore(@RequestBody Store store) {
-        Store savedStore = storeRepository.save(store);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedStore);
+    public ResponseEntity<StoreDTO> createStore(@Valid @RequestBody StoreDTO storeDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(storeService.createStore(storeDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Store> updateStore(@PathVariable Integer id, @RequestBody Store storeDetails) {
-        Optional<Store> optionalStore = storeRepository.findById(id);
-
-        if (optionalStore.isPresent()) {
-            Store existingStore = optionalStore.get();
-            existingStore.setCity(storeDetails.getCity());
-            existingStore.setAddress(storeDetails.getAddress());
-            
-            Store updatedStore = storeRepository.save(existingStore);
-            return ResponseEntity.ok(updatedStore);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<StoreDTO> updateStore(@PathVariable Integer id, @Valid @RequestBody StoreDTO storeDTO) {
+        return ResponseEntity.ok(storeService.updateStore(id, storeDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStore(@PathVariable Integer id) {
-        if (storeRepository.existsById(id)) {
-            storeRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        if (storeService.deleteStore(id)) return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 }
