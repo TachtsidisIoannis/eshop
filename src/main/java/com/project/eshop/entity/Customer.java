@@ -22,4 +22,8 @@ public class Customer {
     private String phone;
     private String city;
     private String address;
+    
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

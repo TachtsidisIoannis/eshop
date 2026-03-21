@@ -43,6 +43,9 @@ public class CustomerService {
     		existingCustomer.setFirstName(customerDTO.getFirstName());
     		existingCustomer.setLastName(customerDTO.getLastName());
     		existingCustomer.setEmail(customerDTO.getEmail());
+    		existingCustomer.setPhone(customerDTO.getPhone());
+    	    existingCustomer.setCity(customerDTO.getCity());
+    	    existingCustomer.setAddress(customerDTO.getAddress());
     		Customer updatedCustomer = customerRepository.save(existingCustomer);
     		return convertToDTO(updatedCustomer);
     	}
@@ -63,6 +66,9 @@ public class CustomerService {
         dto.setFirstName(customer.getFirstName());
         dto.setLastName(customer.getLastName());
         dto.setEmail(customer.getEmail());
+        dto.setPhone(customer.getPhone());
+        dto.setCity(customer.getCity());
+        dto.setAddress(customer.getAddress());
         return dto;
     }
 

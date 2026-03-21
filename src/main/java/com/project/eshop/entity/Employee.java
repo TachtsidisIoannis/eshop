@@ -26,4 +26,8 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
+    
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
