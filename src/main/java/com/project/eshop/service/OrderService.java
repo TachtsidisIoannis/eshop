@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,9 +47,17 @@ public class OrderService {
     }
 
     public OrderDTO createOrder(OrderDTO dto) {
+        // 1. Find the customer
         Customer customer = customerRepository.findById(dto.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found!"));
 
+        // 2. SHIPPING CHECK: Make sure they have filled out their address!
+        if (customer.getAddress() == null || customer.getAddress().isBlank() ||
+            customer.getCity() == null || customer.getCity().isBlank()) {
+            throw new RuntimeException("You must update your profile with a City and Address before checking out!");
+        }
+
+        // 3. Create the shell of the order
         Order order = new Order();
         order.setCustomer(customer);
         order.setOrderDate(LocalDate.now());
@@ -58,6 +68,7 @@ public class OrderService {
 
         BigDecimal finalTotal = BigDecimal.ZERO;
 
+        // 4. Loop through the items and check stock
         for (OrderItemDTO itemDto : dto.getItems()) {
             Product product = productRepository.findById(itemDto.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product ID " + itemDto.getProductId() + " not found!"));
@@ -66,14 +77,16 @@ public class OrderService {
                 throw new RuntimeException("Not enough stock for " + product.getName() + "!");
             }
 
+            // Deduct stock from the database
             product.setStock(product.getStock() - itemDto.getQuantity());
             productRepository.save(product);
 
+            // Save the Order Item
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);
             orderItem.setProduct(product);
             orderItem.setQuantity(itemDto.getQuantity());
-            orderItem.setPrice(product.getPrice());
+            orderItem.setPrice(product.getPrice()); 
 
             orderItemRepository.save(orderItem);
 
@@ -81,6 +94,18 @@ public class OrderService {
             finalTotal = finalTotal.add(itemTotal);
         }
 
+        // 5. DISCOUNT CHECK: 15% off for Employees and Managers!
+        if (customer.getUser() != null) {
+            String role = customer.getUser().getRole();
+            if (role.equals("ROLE_EMPLOYEE") || role.equals("ROLE_MANAGER")) {
+                BigDecimal discountMultiplier = new BigDecimal("0.85");
+                finalTotal = finalTotal.multiply(discountMultiplier);
+                
+                finalTotal = finalTotal.setScale(2, RoundingMode.HALF_UP);
+            }
+        }
+
+        // 6. Update the final order price and save it
         savedOrder.setTotalAmount(finalTotal);
         savedOrder = orderRepository.save(savedOrder);
 
@@ -97,6 +122,7 @@ public class OrderService {
 
         order.setStatus("Canceled");
 
+        // Restore the stock to the products!
         for (OrderItem item : order.getOrderItems()) {
             Product product = item.getProduct();
             product.setStock(product.getStock() + item.getQuantity());

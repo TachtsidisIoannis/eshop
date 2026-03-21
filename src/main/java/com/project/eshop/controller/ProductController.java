@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -37,6 +38,14 @@ public class ProductController {
     @GetMapping("/category/{categoryId}")
     public List<ProductDTO> getProductsByCategory(@PathVariable Integer categoryId) {
         return productService.getProductsByCategory(categoryId);
+    }
+    
+    @GetMapping("/filter")
+    public List<ProductDTO> getProductsByPriceRange(
+            @RequestParam(defaultValue = "0") BigDecimal min, 
+            @RequestParam(defaultValue = "100000") BigDecimal max) {
+        
+        return productService.getProductsByPriceRange(min, max);
     }
 
     @PostMapping

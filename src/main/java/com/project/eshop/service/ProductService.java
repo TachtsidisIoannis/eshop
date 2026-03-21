@@ -8,6 +8,7 @@ import com.project.eshop.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,12 @@ public class ProductService {
 
     public List<ProductDTO> getProductsByCategory(Integer categoryId) {
         return productRepository.findByCategoryId(categoryId).stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+    
+    public List<ProductDTO> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
     public ProductDTO createProduct(ProductDTO productDTO) {
