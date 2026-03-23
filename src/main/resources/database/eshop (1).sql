@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 10 Μαρ 2026 στις 15:31:32
+-- Χρόνος δημιουργίας: 23 Μαρ 2026 στις 11:34:28
 -- Έκδοση διακομιστή: 10.4.32-MariaDB
 -- Έκδοση PHP: 8.2.12
 
@@ -55,19 +55,21 @@ CREATE TABLE `customers` (
   `email` varchar(150) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
-  `address` varchar(150) DEFAULT NULL
+  `address` varchar(150) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `customers`
 --
 
-INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `email`, `phone`, `city`, `address`) VALUES
-(1, 'Alexandros', 'Petrou', 'alex.petrou@email.com', '6900000001', 'Athens', '12 Solonos St'),
-(2, 'Maria', 'Kara', 'maria.kara@email.com', '6900000002', 'Thessaloniki', '55 Egnatia St'),
-(3, 'Dimitris', 'Lagos', 'd.lagos@email.com', '6900000003', 'Patras', '22 Korinthou St'),
-(4, 'Eleni', 'Vlachou', 'eleni.v@email.com', '6900000004', 'Heraklion', '9 Knossou Ave'),
-(5, 'Nikos', 'Tasos', 'nik.tasos@email.com', '6900000005', 'Athens', '88 Patision St');
+INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `email`, `phone`, `city`, `address`, `user_id`) VALUES
+(1, 'Alexandros', 'Petrou', 'alex.petrou@email.com', '6900000001', 'Athens', '12 Solonos St', 3),
+(2, 'Maria', 'Kara', 'maria.kara@email.com', '6900000002', 'Thessaloniki', '55 Egnatia St', NULL),
+(3, 'Dimitris', 'Lagos', 'd.lagos@email.com', '6900000003', 'Patras', '22 Korinthou St', NULL),
+(4, 'Eleni', 'Vlachou', 'eleni.v@email.com', '6900000004', 'Heraklion', '9 Knossou Ave', NULL),
+(5, 'Nikos', 'Tasos', 'nik.tasos@email.com', '6900000005', 'Athens', '88 Patision St', NULL),
+(6, NULL, NULL, 'newguy@email.com', NULL, NULL, NULL, 4);
 
 -- --------------------------------------------------------
 
@@ -80,26 +82,27 @@ CREATE TABLE `employees` (
   `first_name` varchar(100) DEFAULT NULL,
   `last_name` varchar(100) DEFAULT NULL,
   `position` varchar(100) DEFAULT NULL,
-  `store_id` int(11) DEFAULT NULL
+  `store_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `employees`
 --
 
-INSERT INTO `employees` (`employee_id`, `first_name`, `last_name`, `position`, `store_id`) VALUES
-(1, 'Nikos', 'Papadopoulos', 'Store Manager', 1),
-(2, 'Maria', 'Ioannou', 'Sales Associate', 1),
-(3, 'Giorgos', 'Kostas', 'Cashier', 1),
-(4, 'Eleni', 'Dimitriou', 'Store Manager', 2),
-(5, 'Kostas', 'Nikolaidis', 'Sales Associate', 2),
-(6, 'Anna', 'Pavlou', 'Cashier', 2),
-(7, 'Dimitris', 'Georgiou', 'Store Manager', 3),
-(8, 'Sofia', 'Antonopoulou', 'Sales Associate', 3),
-(9, 'Petros', 'Karalis', 'Cashier', 3),
-(10, 'Manolis', 'Kritikos', 'Store Manager', 4),
-(11, 'Irini', 'Markaki', 'Sales Associate', 4),
-(12, 'Giorgos', 'Stavros', 'Cashier', 4);
+INSERT INTO `employees` (`employee_id`, `first_name`, `last_name`, `position`, `store_id`, `user_id`) VALUES
+(1, 'Nikos', 'Papadopoulos', 'Store Manager', 1, 1),
+(2, 'Maria', 'Ioannou', 'Sales Associate', 1, 2),
+(3, 'Giorgos', 'Kostas', 'Cashier', 1, NULL),
+(4, 'Eleni', 'Dimitriou', 'Store Manager', 2, NULL),
+(5, 'Kostas', 'Nikolaidis', 'Sales Associate', 2, NULL),
+(6, 'Anna', 'Pavlou', 'Cashier', 2, NULL),
+(7, 'Dimitris', 'Georgiou', 'Store Manager', 3, NULL),
+(8, 'Sofia', 'Antonopoulou', 'Sales Associate', 3, NULL),
+(9, 'Petros', 'Karalis', 'Cashier', 3, NULL),
+(10, 'Manolis', 'Kritikos', 'Store Manager', 4, NULL),
+(11, 'Irini', 'Markaki', 'Sales Associate', 4, NULL),
+(12, 'Giorgos', 'Stavros', 'Cashier', 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -124,7 +127,9 @@ INSERT INTO `orders` (`order_id`, `customer_id`, `order_date`, `status`, `total_
 (2, 2, '2026-02-12', 'Completed', 12.00),
 (3, 3, '2026-02-15', 'Pending', 35.00),
 (4, 4, '2026-02-18', 'Completed', 65.00),
-(5, 5, '2026-02-20', 'Shipped', 27.50);
+(5, 5, '2026-02-20', 'Shipped', 27.50),
+(6, 1, '2026-03-18', 'Pending', 1.00),
+(7, 1, '2026-03-18', 'Pending', 0.00);
 
 -- --------------------------------------------------------
 
@@ -152,7 +157,8 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (5, 3, 47, 1, 20.00),
 (6, 4, 45, 1, 65.00),
 (7, 5, 27, 1, 6.00),
-(8, 5, 33, 5, 1.30);
+(8, 5, 33, 5, 1.30),
+(9, 6, 1, 2, 0.50);
 
 -- --------------------------------------------------------
 
@@ -173,7 +179,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `name`, `price`, `stock`, `category_id`) VALUES
-(1, 'Ballpoint Pen Blue', 0.50, 500, 1),
+(1, 'Ballpoint Pen Blue', 0.50, 498, 1),
 (2, 'Ballpoint Pen Black', 0.50, 500, 1),
 (3, 'Gel Pen', 1.20, 300, 1),
 (4, 'Mechanical Pencil', 1.50, 200, 1),
@@ -222,7 +228,8 @@ INSERT INTO `products` (`product_id`, `name`, `price`, `stock`, `category_id`) V
 (47, 'Desk Lamp LED', 20.00, 40, 4),
 (48, 'Label Maker', 30.00, 15, 4),
 (49, 'Paper Shredder', 55.00, 10, 4),
-(50, 'Webcam HD', 35.00, 25, 4);
+(50, 'Webcam HD', 35.00, 25, 4),
+(51, 'Triple Sided Eraser', 200.50, 100, 1);
 
 -- --------------------------------------------------------
 
@@ -277,6 +284,29 @@ INSERT INTO `store_inventory` (`inventory_id`, `store_id`, `product_id`, `quanti
 (11, 4, 48, 12),
 (12, 4, 50, 15);
 
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `users`
+--
+
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `role`) VALUES
+(1, 'manager', '$2a$10$A5Kj4sLv7wbTKbiVOqWe5eaQVEOABPwdzs4T0CUhKRTMEO3xayanm', 'ROLE_MANAGER'),
+(2, 'employee', '$2a$10$A5Kj4sLv7wbTKbiVOqWe5eaQVEOABPwdzs4T0CUhKRTMEO3xayanm', 'ROLE_EMPLOYEE'),
+(3, 'alex_customer', '$2a$10$A5Kj4sLv7wbTKbiVOqWe5eaQVEOABPwdzs4T0CUhKRTMEO3xayanm', 'ROLE_CUSTOMER'),
+(4, 'new_guy', '$2a$10$tmiz5K1MmGYIpOLit40l0.5aXUU.JbsYi43NPIPuZFTq5nM5BRsBW', 'ROLE_CUSTOMER');
+
 --
 -- Ευρετήρια για άχρηστους πίνακες
 --
@@ -292,14 +322,16 @@ ALTER TABLE `categories`
 --
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`customer_id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_customer_user` (`user_id`);
 
 --
 -- Ευρετήρια για πίνακα `employees`
 --
 ALTER TABLE `employees`
   ADD PRIMARY KEY (`employee_id`),
-  ADD KEY `store_id` (`store_id`);
+  ADD KEY `store_id` (`store_id`),
+  ADD KEY `fk_employee_user` (`user_id`);
 
 --
 -- Ευρετήρια για πίνακα `orders`
@@ -338,14 +370,86 @@ ALTER TABLE `store_inventory`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Ευρετήρια για πίνακα `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT για άχρηστους πίνακες
+--
+
+--
+-- AUTO_INCREMENT για πίνακα `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT για πίνακα `customers`
+--
+ALTER TABLE `customers`
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT για πίνακα `employees`
+--
+ALTER TABLE `employees`
+  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT για πίνακα `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT για πίνακα `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT για πίνακα `products`
+--
+ALTER TABLE `products`
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+
+--
+-- AUTO_INCREMENT για πίνακα `stores`
+--
+ALTER TABLE `stores`
+  MODIFY `store_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT για πίνακα `store_inventory`
+--
+ALTER TABLE `store_inventory`
+  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT για πίνακα `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- Περιορισμοί για άχρηστους πίνακες
 --
+
+--
+-- Περιορισμοί για πίνακα `customers`
+--
+ALTER TABLE `customers`
+  ADD CONSTRAINT `fk_customer_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Περιορισμοί για πίνακα `employees`
 --
 ALTER TABLE `employees`
-  ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`);
+  ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`),
+  ADD CONSTRAINT `fk_employee_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Περιορισμοί για πίνακα `orders`
